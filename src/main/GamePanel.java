@@ -1,9 +1,12 @@
 package main;
 
-import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.Random;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import inputs.KeyboardInputs;
@@ -13,17 +16,36 @@ public class GamePanel extends JPanel {
 
     private MouseInputs mouseInputs;
     private float dx = 100, dy = 100;
-    private float xdir = 0.6f, ydir = 0.6f;
-    private Color color = new Color(150, 20, 90);
-    private Random random = new Random();
+    private BufferedImage img, subImg;
     
     public GamePanel(){
 
+        importImg();
+
         mouseInputs = new MouseInputs(this);
+        setPanelSize();
         addKeyListener(new KeyboardInputs(this));
         addMouseListener(mouseInputs);
         addMouseMotionListener(mouseInputs);
 
+    }
+
+    private void importImg(){
+        InputStream is = getClass().getResourceAsStream("/player_sprites.png");
+
+        try {
+            img = ImageIO.read(is);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private void setPanelSize() {
+        Dimension size = new Dimension(1280,800);
+        setMinimumSize(size);
+        setMaximumSize(size);
+        setPreferredSize(size);
     }
 
     public void changedx(int val){
@@ -42,31 +64,10 @@ public class GamePanel extends JPanel {
     public void paintComponent(Graphics g){
         super.paintComponent(g);
 
-        updateRect();
-
-        g.setColor(color);
-        g.fillRect((int)dx, (int)dy, 200, 50);
-    }
-
-    private void updateRect(){
-        dx += xdir;
-        if(dx > 400 || dx < 0){
-            xdir *= -1;
-            color = getRDMColor();
-        }
-        dy += ydir;
-        if(dy > 400 || dy < 0){
-            ydir *= -1;
-            color = getRDMColor();
-        }
+        subImg = img.getSubimage(1*64, 8*40, 64, 40);
+        g.drawImage(subImg, (int)dx, (int)dy, 128, 80, null);
 
     }
 
-    private Color getRDMColor(){
-        int r = random.nextInt(255);
-        int g = random.nextInt(255);
-        int b = random.nextInt(255);
 
-        return new Color(r, g, b);
-    }
 }
