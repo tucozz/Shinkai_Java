@@ -20,7 +20,7 @@ public class GamePanel extends JPanel {
     private float dx = 100, dy = 100;
     private BufferedImage img;
     private BufferedImage[][] animations;
-    private int aniTick, aniIndex, aniSpeed = 15;
+    private int aniTick, aniIndex, aniSpeed = 30;
     private int player_action = IDLE;
     private int player_direction = -1;
     private boolean moving = false;
@@ -80,7 +80,7 @@ public class GamePanel extends JPanel {
         this.moving = moving;
     }
 
-    public void updateAnimationsTick(Graphics g){
+    public void updateAnimationsTick(){
         aniTick++;
         if(aniTick >= aniSpeed){
             aniTick = 0;
@@ -91,15 +91,16 @@ public class GamePanel extends JPanel {
         }
     }
 
+    public void updateGame(){
+        updateAnimationsTick();
+        setAnimation();
+        updatePos();
+    }
+
     public void paintComponent(Graphics g){
         requestFocus(true);
 
         super.paintComponent(g);
-
-        updateAnimationsTick(g);
-
-        setAnimation();
-        updatePos();
 
         g.drawImage(animations[player_action][aniIndex], (int)dx, (int)dy, 256, 160, null);
 
