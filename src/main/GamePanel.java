@@ -17,50 +17,17 @@ import static utils.Constants.Directions.*;
 public class GamePanel extends JPanel {
 
     private MouseInputs mouseInputs;
-    private float dx = 100, dy = 100;
-    private BufferedImage img;
-    private BufferedImage[][] animations;
-    private int aniTick, aniIndex, aniSpeed = 30;
-    private int player_action = IDLE;
-    private int player_direction = -1;
-    private boolean moving = false;
+    private Game game;
     
-    public GamePanel(){
-
-        importImg();
-        LoadAnimations();
+    public GamePanel(Game game){
 
         mouseInputs = new MouseInputs(this);
+        this.game = game;
+
         setPanelSize();
         addKeyListener(new KeyboardInputs(this));
         addMouseListener(mouseInputs);
         addMouseMotionListener(mouseInputs);
-
-    }
-
-    private void importImg(){
-        InputStream is = getClass().getResourceAsStream("/player_sprites.png");
-
-        try {
-            img = ImageIO.read(is);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void LoadAnimations(){
-        animations = new BufferedImage[9][6];
-
-        for(int i = 0; i < animations.length; i++)
-            for(int j = 0; j < animations[i].length; j++)
-                animations[i][j] = img.getSubimage(j*64, i*40, 64, 40);
 
     }
 
@@ -71,30 +38,9 @@ public class GamePanel extends JPanel {
         setPreferredSize(size);
     }
 
-    public void setDirection(int direction){
-        this.player_direction = direction;
-        moving = true;
-    }
-
-    public void setMoving(boolean moving){
-        this.moving = moving;
-    }
-
-    public void updateAnimationsTick(){
-        aniTick++;
-        if(aniTick >= aniSpeed){
-            aniTick = 0;
-            aniIndex++;
-           if(aniIndex >= GetSpriteAmount(player_action)){
-                aniIndex = 0;
-            }
-        }
-    }
 
     public void updateGame(){
-        updateAnimationsTick();
-        setAnimation();
-        updatePos();
+    
     }
 
     public void paintComponent(Graphics g){
@@ -102,39 +48,12 @@ public class GamePanel extends JPanel {
 
         super.paintComponent(g);
 
-        g.drawImage(animations[player_action][aniIndex], (int)dx, (int)dy, 256, 160, null);
+        game.render(g);
 
     }
 
-    private void updatePos() {
-
-        if(moving){
-            switch(player_direction){
-                case LEFT:
-                    dx -= 5;
-                    break;
-                case UP:
-                    dy -= 5;
-                    break;
-                case RIGHT:
-                    dx += 5;
-                    break;
-                case DOWN:
-                    dy += 5;
-                    break;
-            }
-        }
-
+    public Game getGame(){
+        return game;
     }
-
-    private void setAnimation() {
-
-        if(moving)
-            player_action = RUNNING;
-        else
-            player_action = IDLE;
-
-    }
-
 
 }
