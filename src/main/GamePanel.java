@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 import static utils.Constants.PlayerConstants.*;
+import static utils.Constants.Directions.*;
 
 public class GamePanel extends JPanel {
 
@@ -21,6 +22,8 @@ public class GamePanel extends JPanel {
     private BufferedImage[][] animations;
     private int aniTick, aniIndex, aniSpeed = 15;
     private int player_action = IDLE;
+    private int player_direction = -1;
+    private boolean moving = false;
     
     public GamePanel(){
 
@@ -68,8 +71,13 @@ public class GamePanel extends JPanel {
         setPreferredSize(size);
     }
 
-    public void setMoving(int direction){
-        
+    public void setDirection(int direction){
+        this.player_direction = direction;
+        moving = true;
+    }
+
+    public void setMoving(boolean moving){
+        this.moving = moving;
     }
 
     public void updateAnimationsTick(Graphics g){
@@ -90,7 +98,40 @@ public class GamePanel extends JPanel {
 
         updateAnimationsTick(g);
 
-        g.drawImage(animations[player_action][aniIndex], (int)dx, (int)dy, 128, 80, null);
+        setAnimation();
+        updatePos();
+
+        g.drawImage(animations[player_action][aniIndex], (int)dx, (int)dy, 256, 160, null);
+
+    }
+
+    private void updatePos() {
+
+        if(moving){
+            switch(player_direction){
+                case LEFT:
+                    dx -= 5;
+                    break;
+                case UP:
+                    dy -= 5;
+                    break;
+                case RIGHT:
+                    dx += 5;
+                    break;
+                case DOWN:
+                    dy += 5;
+                    break;
+            }
+        }
+
+    }
+
+    private void setAnimation() {
+
+        if(moving)
+            player_action = RUNNING;
+        else
+            player_action = IDLE;
 
     }
 
